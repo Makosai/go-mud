@@ -6,3 +6,9 @@ import "mud.kristech.io/core/obj"
 type Mob struct {
 	obj.Obj
 }
+
+func NewMob(name, description string) Mob {
+	return Mob{
+		Obj: obj.NewObj(name, description),
+	}
+}
