@@ -4,9 +4,11 @@ import (
 	"testing"
 )
 
+var name string = "Mako"
+
 // NewClient should create a local client with an ID of 1.
 func TestLocalClient(t *testing.T) {
-	client := NewClient()
+	client := NewClient(name)
 	if client.id == 1 {
 		t.Log("Client ID is 1")
 	} else {
@@ -16,14 +18,12 @@ func TestLocalClient(t *testing.T) {
 
 // NewClientRemote should set the ID properly.
 func TestRemoteClient(t *testing.T) {
-	client := NewClientRemote(2)
+	client := NewClientRemote(2, name)
 	if client.id == 2 {
 		t.Log("Client ID is 2")
 	} else {
 		t.Error("Client ID is not 2")
 	}
-
-	client.id
 }
 
 // NewClientRemote should panic if the ID is 1.
@@ -35,5 +35,5 @@ func TestRemoteClientPanic(t *testing.T) {
 			t.Log("The code panicked")
 		}
 	}()
-	NewClientRemote(1)
+	NewClientRemote(1, name)
 }

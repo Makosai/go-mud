@@ -1,20 +1,26 @@
 package main
 
-import "time"
+import (
+	"time"
+
+	"mud.kristech.io/core/obj/mob/attackable"
+)
 
 type Client struct {
-	id   uint8
-	quit chan bool
+	id     uint8
+	player *attackable.Player
+	quit   chan bool
 }
 
-func NewClient() *Client {
+func NewClient(name string) *Client {
 	return &Client{
-		id:   1,
-		quit: make(chan bool, 1),
+		id:     1,
+		player: attackable.NewPlayer(name),
+		quit:   make(chan bool, 1),
 	}
 }
 
-func NewClientRemote(id uint8) *Client {
+func NewClientRemote(id uint8, name string) *Client {
 	if id == 0 {
 		panic("Client ID cannot initially be 0.")
 	}
@@ -24,8 +30,9 @@ func NewClientRemote(id uint8) *Client {
 	}
 
 	return &Client{
-		id:   id,
-		quit: make(chan bool, 1),
+		id:     id,
+		player: attackable.NewPlayer(name),
+		quit:   make(chan bool, 1),
 	}
 }
 
@@ -39,6 +46,12 @@ Engine:
 		case <-c.quit:
 			println("pow!")
 			break Engine
+
+		case <-tick:
+			println("tick!")
+
+		default:
+			println("bang!")
 		}
 	}
 

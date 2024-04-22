@@ -1,6 +1,6 @@
 package main
 
 func main() {
-	client := NewClient()
+	client := NewClient("Mako")
 	client.Run()
 }
