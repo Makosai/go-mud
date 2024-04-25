@@ -89,7 +89,7 @@ Engine:
 		}
 	}
 
-	if c.id == 0 {
+	if c.id == 1 {
 		println("Goodbye, my c.quit lover!")
 	} else {
 		println("Client", c.id, "quit.")
