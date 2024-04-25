@@ -75,17 +75,17 @@ func (c *Client) Run() {
 
 Engine:
 	for range tick {
-		println("boom")
 		select {
 		case <-c.quit:
-			println("pow!")
 			break Engine
 
-		case <-tick:
-			println("tick!")
-
 		default:
-			println("bang!")
+			if c.player.Location.AreaName == "Crescent Fall" {
+				c.player.Location.AreaName = "Liondown"
+			} else {
+				c.player.Location.AreaName = "Crescent Fall"
+			}
+			// println("bang!")
 		}
 	}
 
@@ -99,6 +99,7 @@ Engine:
 func (c *Client) Call(opt string) {
 	switch opt {
 	case "quit":
+		println("quitting.............")
 		c.quit <- true
 	}
 }
