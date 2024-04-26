@@ -3,11 +3,14 @@ package main
 import (
 	"time"
 
+	"github.com/rivo/tview"
 	"mud.kristech.io/core/obj/mob/attackable"
+	"mud.kristech.io/ui"
 )
 
 type Client struct {
 	id     uint8
+	ui     *tview.Application
 	player *attackable.Player
 	quit   chan bool
 }
@@ -27,6 +30,7 @@ func NewClient(name string) *Client {
 
 	return &Client{
 		id: 1,
+		ui: ui.NewApp(),
 		player: attackable.NewPlayer(
 			name,
 			health,
@@ -72,6 +76,8 @@ func NewClientRemote(id uint8, name string) *Client {
 
 func (c *Client) Run() {
 	tick := time.Tick(16 * time.Millisecond)
+
+	go ui.Render(c.ui, c.player.Location, &c.quit)
 
 Engine:
 	for range tick {
