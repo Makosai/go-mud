@@ -1,16 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/rivo/tview"
 	"mud.kristech.io/core/obj/mob/attackable"
 	"mud.kristech.io/ui"
 )
 
 type Client struct {
 	id     uint8
-	ui     *tview.Application
+	ui     *ui.UI
 	player *attackable.Player
 	quit   chan bool
 }
@@ -30,7 +30,7 @@ func NewClient(name string) *Client {
 
 	return &Client{
 		id: 1,
-		ui: ui.NewApp(),
+		ui: ui.NewUI(),
 		player: attackable.NewPlayer(
 			name,
 			health,
@@ -75,9 +75,10 @@ func NewClientRemote(id uint8, name string) *Client {
 }
 
 func (c *Client) Run() {
-	tick := time.Tick(16 * time.Millisecond)
+	tick := time.Tick(256 * time.Millisecond)
 
-	go ui.Render(c.ui, c.player.Location, &c.quit)
+	c.ui.App.SetRoot(ui.NewLayout(c.ui), true)
+	go ui.Render(c.ui.App, &c.quit)
 
 Engine:
 	for range tick {
@@ -91,6 +92,10 @@ Engine:
 			} else {
 				c.player.Location.AreaName = "Crescent Fall"
 			}
+
+			c.ui.App.QueueUpdateDraw(func() {
+				c.ui.Contents.UpdateTitle(fmt.Sprintf("%s - %s", "go-mud", c.player.Location.AreaName))
+			})
 			// println("bang!")
 		}
 	}

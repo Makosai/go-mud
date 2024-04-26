@@ -5,35 +5,50 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"mud.kristech.io/core/obj/mob/attackable"
 )
 
+// UI struct containing the app and all UI elements so they can be accessed from the main thread
+type UI struct {
+	App      *tview.Application
+	Contents *AppContents
+}
+
+func NewUI() *UI {
+	return &UI{
+		App: NewApp(),
+	}
+}
+
+// Creates a tview application
 func NewApp() *tview.Application {
-	app := tview.NewApplication()
+	app := tview.NewApplication().
+		SetBeforeDrawFunc(func(screen tcell.Screen) bool {
+			screen.Clear()
+			return false
+		})
 
 	return app
 }
 
-func newPrimitive(text string) tview.Primitive {
-	return tview.NewTextView().
-		SetTextAlign(tview.AlignCenter).
-		SetText(text)
-}
+// Creates the layout for the UI
+func NewLayout(ui *UI) *tview.Grid {
+	ui.Contents = new(AppContents)
 
-func Render(app *tview.Application, location *attackable.Location, quit *chan bool) {
 	// The title uses a global variable
-	title := newPrimitive(fmt.Sprintf("go-mud - %s", location.AreaName))
-	titleCombo := newPrimitive(fmt.Sprintf("[SWAP COMBO BOX] go-mud - %s", location.AreaName))
-	tabs := newPrimitive("Tabs")
-	progress := newPrimitive("Money")
+	ui.Contents.title = newTextView(fmt.Sprintf("%s - %s", "go-mud", "Lobby"))
+	ui.Contents.titleCombo = newTextView(fmt.Sprintf("[SWAP] %s - %s", "go-mud", "Lobby"))
+	ui.Contents.tabs = newTextView("Tabs").SetTextAlign(tview.AlignCenter)
+	ui.Contents.progress = newTextView("Money")
 
-	chatBox := newPrimitive("Chat")
-	menu := newPrimitive("Inventory & Commands")
-	graphics := newPrimitive("Graphics")
-	comboBox := newPrimitive("ComboBox | Chat or Graphics + Inventory & Commands")
-	info := newPrimitive("Stats & Shopping Info")
+	ui.Contents.chatBox = newTextView("Chat")
+	ui.Contents.menu = newTextView("Inventory & Commands")
+	ui.Contents.graphics = newImage("images/merchant.jpg")
+	ui.Contents.comboBox = newTextView("ComboBox | Chat or Graphics + Inventory & Commands")
+	ui.Contents.info = newTextView("Stats & Shopping Info")
 
-	chatInput := newPrimitive("Press Enter to chat...")
+	ui.Contents.chatInput = newTextView("Press Enter to chat...")
+
+	ui.Contents.quitBtn = tview.NewButton("Q to Quit")
 
 	grid := tview.NewGrid().
 		SetRows(1, 0, 0, 0, 1).
@@ -42,27 +57,32 @@ func Render(app *tview.Application, location *attackable.Location, quit *chan bo
 
 	// Small Screen Support
 	grid.
-		AddItem(titleCombo, 0, 0, 1, 1, 0, 0, false).
-		AddItem(comboBox, 1, 0, 3, 2, 0, 0, false)
+		AddItem(ui.Contents.titleCombo, 0, 0, 1, 1, 0, 0, false).
+		AddItem(ui.Contents.comboBox, 1, 0, 3, 2, 0, 0, false)
 
 	// Topbar
 	grid.
-		AddItem(title, 0, 0, 1, 1, 20, 100, false).
-		AddItem(tabs, 0, 1, 1, 1, 0, 0, false).
-		AddItem(progress, 0, 2, 1, 1, 0, 0, false)
+		AddItem(ui.Contents.title, 0, 0, 1, 1, 20, 100, false).
+		AddItem(ui.Contents.tabs, 0, 1, 1, 1, 0, 0, false).
+		AddItem(ui.Contents.progress, 0, 2, 1, 1, 0, 0, false)
 
 	// Center
 	grid.
-		AddItem(chatBox, 1, 1, 3, 1, 20, 100, false).
-		AddItem(graphics, 1, 0, 1, 1, 20, 100, false).
-		AddItem(menu, 2, 0, 2, 1, 20, 100, false).
-		AddItem(info, 1, 2, 3, 1, 0, 0, false)
+		AddItem(ui.Contents.chatBox, 1, 1, 3, 1, 20, 100, false).
+		AddItem(ui.Contents.graphics, 1, 0, 1, 1, 20, 100, false).
+		AddItem(ui.Contents.menu, 2, 0, 2, 1, 20, 100, false).
+		AddItem(ui.Contents.info, 1, 2, 3, 1, 0, 0, false)
 
 	// Bottombar
-	grid.AddItem(chatInput, 4, 0, 1, 3, 0, 0, false)
+	grid.AddItem(ui.Contents.chatInput, 4, 0, 1, 3, 0, 0, false)
 
-	grid.AddItem(tview.NewButton("Q to Quit").SetSelectedFunc(func() { app.Stop() }), 4, 2, 1, 1, 0, 0, false)
+	grid.AddItem(ui.Contents.quitBtn, 4, 2, 1, 1, 0, 0, false)
 
+	return grid
+}
+
+// Starts the UI
+func Render(app *tview.Application, quit *chan bool) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		// Anything handled here will be executed on the main thread
 		switch event.Key() {
@@ -77,7 +97,7 @@ func Render(app *tview.Application, location *attackable.Location, quit *chan bo
 		return event
 	})
 
-	if err := app.SetRoot(grid, true).EnableMouse(true).Run(); err != nil {
+	if err := app.EnableMouse(true).Run(); err != nil {
 		panic(err)
 	}
 }
