@@ -105,7 +105,6 @@ Engine:
 func (c *Client) Call(opt string) {
 	switch opt {
 	case "quit":
-		println("quitting.............")
 		c.quit <- true
 	}
 }
