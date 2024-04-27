@@ -32,18 +32,20 @@ func NewApp() *tview.Application {
 
 // Creates the layout for the UI
 func NewLayout(ui *UI) *tview.Grid {
+	const TITLE = "go-mud"
+
 	ui.Contents = new(AppContents)
 
 	// The title uses a global variable
-	ui.Contents.title = newTextView(fmt.Sprintf("%s - %s", "go-mud", "Lobby"))
-	ui.Contents.titleCombo = newTextView(fmt.Sprintf("[SWAP] %s - %s", "go-mud", "Lobby"))
+	ui.Contents.title = newTextView(fmt.Sprintf("%s - %s", TITLE, "Lobby"))
+	ui.Contents.titleCombo = newTextView(fmt.Sprintf("[SWAP] %s - %s", TITLE, "Lobby"))
 	ui.Contents.tabs = newTextView("Tabs").SetTextAlign(tview.AlignCenter)
 	ui.Contents.progress = newTextView("Money")
 
 	ui.Contents.chatBox = newTextView("Chat")
 	ui.Contents.menu = newTextView("Inventory & Commands")
 	ui.Contents.graphics = newImage("images/merchant.jpg")
-	ui.Contents.comboBox = newTextView("ComboBox | Chat or Graphics + Inventory & Commands")
+	ui.Contents.container = newTextView("ComboBox | Chat or Graphics + Inventory & Commands")
 	ui.Contents.info = newTextView("Stats & Shopping Info")
 
 	ui.Contents.chatInput = newTextView("Press Enter to chat...")
@@ -58,7 +60,7 @@ func NewLayout(ui *UI) *tview.Grid {
 	// Small Screen Support
 	grid.
 		AddItem(ui.Contents.titleCombo, 0, 0, 1, 1, 0, 0, false).
-		AddItem(ui.Contents.comboBox, 1, 0, 3, 2, 0, 0, false)
+		AddItem(ui.Contents.container, 1, 0, 3, 2, 0, 0, false)
 
 	// Topbar
 	grid.
