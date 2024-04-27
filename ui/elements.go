@@ -10,11 +10,9 @@ import (
 )
 
 func newTextView(text string) *tview.TextView {
-	title := tview.NewTextView().
+	return tview.NewTextView().
 		SetText(text).
 		SetDynamicColors(true)
-
-	return title
 }
 
 func getPhoto(path string) image.Image {
