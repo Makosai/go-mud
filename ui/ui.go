@@ -32,53 +32,45 @@ func NewApp() *tview.Application {
 
 // Creates the layout for the UI
 func NewLayout(ui *UI) *tview.Grid {
-	const TITLE = "go-mud"
-
 	ui.Contents = new(AppContents)
 
 	// The title uses a global variable
-	ui.Contents.title = newTextView(fmt.Sprintf("%s - %s", TITLE, "Lobby"))
-	ui.Contents.titleCombo = newTextView(fmt.Sprintf("[SWAP] %s - %s", TITLE, "Lobby"))
+	ui.Contents.info = newTextView("Map & Combat")
+	ui.Contents.pages = newTextView("Pages | Shop, Inventory, Quests, etc.")
+
+	ui.Contents.location = newTextView(fmt.Sprintf("%s - %s", "go-mud", "Lobby"))
 	ui.Contents.tabs = newTextView("Tabs").SetTextAlign(tview.AlignCenter)
-	ui.Contents.progress = newTextView("Money")
 
-	ui.Contents.chatBox = newTextView("Chat")
-	ui.Contents.menu = newTextView("Inventory & Commands")
-	ui.Contents.graphics = newImage("images/merchant.jpg")
-	ui.Contents.container = newTextView("ComboBox | Chat or Graphics + Inventory & Commands")
-	ui.Contents.info = newTextView("Stats & Shopping Info")
+	ui.Contents.stats = newTextView("Money, Health, and Stats")
+	ui.Contents.chat = newTextView("Chat")
 
-	ui.Contents.chatInput = newTextView("Press Enter to chat...")
-
-	ui.Contents.quitBtn = tview.NewButton("Q to Quit")
+	ui.Contents.quit = tview.NewButton("Q to Quit")
+	ui.Contents.input = newTextView("Press Enter to chat...")
 
 	grid := tview.NewGrid().
-		SetRows(1, 0, 0, 0, 1).
-		SetColumns(40, 0, 30).
+		SetRows(0, 1, 0, 1).
+		SetColumns(0, 0, 0).
 		SetBorders(true)
 
-	// Small Screen Support
+	// Top
 	grid.
-		AddItem(ui.Contents.titleCombo, 0, 0, 1, 1, 0, 0, false).
-		AddItem(ui.Contents.container, 1, 0, 3, 2, 0, 0, false)
+		AddItem(ui.Contents.info, 0, 0, 1, 1, 0, 0, false).
+		AddItem(ui.Contents.pages, 0, 1, 1, 2, 0, 0, false)
 
-	// Topbar
+	// Middle
 	grid.
-		AddItem(ui.Contents.title, 0, 0, 1, 1, 20, 100, false).
-		AddItem(ui.Contents.tabs, 0, 1, 1, 1, 0, 0, false).
-		AddItem(ui.Contents.progress, 0, 2, 1, 1, 0, 0, false)
+		AddItem(ui.Contents.location, 1, 0, 1, 1, 0, 0, false).
+		AddItem(ui.Contents.tabs, 1, 1, 1, 2, 0, 0, false)
 
-	// Center
+	// Bottom
 	grid.
-		AddItem(ui.Contents.chatBox, 1, 1, 3, 1, 20, 100, false).
-		AddItem(ui.Contents.graphics, 1, 0, 1, 1, 20, 100, false).
-		AddItem(ui.Contents.menu, 2, 0, 2, 1, 20, 100, false).
-		AddItem(ui.Contents.info, 1, 2, 3, 1, 0, 0, false)
+		AddItem(ui.Contents.stats, 2, 0, 1, 1, 0, 0, false).
+		AddItem(ui.Contents.chat, 2, 1, 1, 2, 0, 0, false)
 
-	// Bottombar
-	grid.AddItem(ui.Contents.chatInput, 4, 0, 1, 3, 0, 0, false)
-
-	grid.AddItem(ui.Contents.quitBtn, 4, 2, 1, 1, 0, 0, false)
+	// Footer
+	grid.
+		AddItem(ui.Contents.quit, 3, 0, 1, 1, 0, 0, false).
+		AddItem(ui.Contents.input, 3, 1, 1, 2, 0, 0, false)
 
 	return grid
 }

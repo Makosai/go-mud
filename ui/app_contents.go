@@ -1,28 +1,22 @@
 package ui
 
 import (
-	"fmt"
-
 	"github.com/rivo/tview"
 )
 
 type AppContents struct {
-	title      *tview.TextView
-	titleCombo *tview.TextView
-	tabs       *tview.TextView
-	progress   *tview.TextView
+	info     *tview.TextView
+	pages    *tview.TextView
+	location *tview.TextView
 
-	chatBox   *tview.TextView
-	menu      *tview.TextView
-	graphics  *tview.Image
-	container *tview.TextView
-	info      *tview.TextView
+	tabs  *tview.TextView
+	stats *tview.TextView
+	chat  *tview.TextView
 
-	chatInput *tview.TextView
-	quitBtn   *tview.Button
+	quit  *tview.Button
+	input *tview.TextView
 }
 
 func (contents *AppContents) UpdateTitle(title string) {
-	contents.title.SetText(title)
-	contents.titleCombo.SetText(fmt.Sprintf("[SWAP] %s", title))
+	contents.location.SetText(title)
 }
