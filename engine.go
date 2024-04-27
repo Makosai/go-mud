@@ -78,7 +78,10 @@ func (c *Client) Run() {
 	tick := time.Tick(256 * time.Millisecond)
 
 	c.ui.App.SetRoot(ui.NewLayout(c.ui), true)
-	go ui.Render(c.ui.App, &c.quit)
+	go ui.Render(c.player, c.ui, &c.quit)
+
+	c.ui.Contents.SetLocation(c.player.Location.AreaName)
+	c.ui.Contents.SetInfo(ui.Merchant)
 
 Engine:
 	for range tick {
@@ -94,7 +97,7 @@ Engine:
 			}
 
 			c.ui.App.QueueUpdateDraw(func() {
-				c.ui.Contents.UpdateTitle(fmt.Sprintf("%s - %s", "go-mud", c.player.Location.AreaName))
+				c.ui.Contents.SetLocation(fmt.Sprintf("%s - %s", c.player.Name, c.player.Location.AreaName))
 			})
 			// println("bang!")
 		}
@@ -107,6 +110,7 @@ Engine:
 	}
 }
 
+// Call is used to send a command to the client.
 func (c *Client) Call(opt string) {
 	switch opt {
 	case "quit":

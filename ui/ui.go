@@ -2,10 +2,14 @@ package ui
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"mud.kristech.io/core/obj/mob/attackable"
 )
+
+var lastFocusShift time.Time = time.Now()
 
 // UI struct containing the app and all UI elements so they can be accessed from the main thread
 type UI struct {
@@ -34,8 +38,7 @@ func NewApp() *tview.Application {
 func NewLayout(ui *UI) *tview.Grid {
 	ui.Contents = new(AppContents)
 
-	// The title uses a global variable
-	ui.Contents.info = newTextView("Map & Combat")
+	ui.Contents.info = newImage(Merchant) // Map & Combat
 	ui.Contents.pages = newTextView("Pages | Shop, Inventory, Quests, etc.")
 
 	ui.Contents.location = newTextView(fmt.Sprintf("%s - %s", "go-mud", "Lobby"))
@@ -45,7 +48,7 @@ func NewLayout(ui *UI) *tview.Grid {
 	ui.Contents.chat = newTextView("Chat")
 
 	ui.Contents.quit = tview.NewButton("Q to Quit")
-	ui.Contents.input = newTextView("Press Enter to chat...")
+	ui.Contents.input = tview.NewInputField().SetPlaceholder("Press Enter to chat...")
 
 	grid := tview.NewGrid().
 		SetRows(0, 1, 0, 1).
@@ -76,22 +79,12 @@ func NewLayout(ui *UI) *tview.Grid {
 }
 
 // Starts the UI
-func Render(app *tview.Application, quit *chan bool) {
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		// Anything handled here will be executed on the main thread
-		switch event.Key() {
-		case tcell.KeyRune:
-			switch event.Rune() {
-			case 'Q', 'q':
-				*quit <- true
-				app.Stop()
-			}
-		}
+func Render(player *attackable.Player, ui *UI, quit *chan bool) {
+	ui.SetInputCapture(player, quit)
 
-		return event
-	})
+	ui.App.SetFocus(ui.Contents.input)
 
-	if err := app.EnableMouse(true).Run(); err != nil {
+	if err := ui.App.EnableMouse(true).Run(); err != nil {
 		panic(err)
 	}
 }
