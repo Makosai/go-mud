@@ -46,7 +46,7 @@ func handleInputCommands(ui *UI, player *attackable.Player) {
 
 		// Blur / Unfocus the input field
 		case tcell.KeyESC:
-			ui.Contents.input.Blur()
+			ui.App.SetFocus(ui.Contents.grid)
 		}
 
 		return event
@@ -56,12 +56,19 @@ func handleInputCommands(ui *UI, player *attackable.Player) {
 // Handles the Root App Commands
 func handleAppCommands(ui *UI, quit *chan bool) {
 	ui.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		// Anything handled here will be executed on the main thread
 		switch event.Key() {
 		// Focus the input field
 		case tcell.KeyEnter, tcell.KeyBackspace, tcell.KeyDelete, tcell.KeyDEL:
 			ui.FocusInput()
+		}
 
+		// Only handle global shortcuts if the input field is not focused
+		if ui.App.GetFocus() == ui.Contents.input {
+			return event // Let the input field handle everything
+		}
+
+		// Anything handled here will be executed on the main thread
+		switch event.Key() {
 		case tcell.KeyRune:
 			switch event.Rune() {
 			// Quit the application

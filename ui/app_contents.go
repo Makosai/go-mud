@@ -16,6 +16,8 @@ type AppContents struct {
 
 	quit  *tview.Button
 	input *tview.InputField
+
+	grid *tview.Grid
 }
 
 func (contents *AppContents) SetInfo(path Images) {

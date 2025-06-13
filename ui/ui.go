@@ -50,32 +50,32 @@ func NewLayout(ui *UI) *tview.Grid {
 	ui.Contents.quit = tview.NewButton("Q to Quit")
 	ui.Contents.input = tview.NewInputField().SetPlaceholder("Press Enter to chat...")
 
-	grid := tview.NewGrid().
+	ui.Contents.grid = tview.NewGrid().
 		SetRows(0, 1, 0, 1).
 		SetColumns(0, 0, 0).
 		SetBorders(true)
 
 	// Top
-	grid.
+	ui.Contents.grid.
 		AddItem(ui.Contents.info, 0, 0, 1, 1, 0, 0, false).
 		AddItem(ui.Contents.pages, 0, 1, 1, 2, 0, 0, false)
 
 	// Middle
-	grid.
+	ui.Contents.grid.
 		AddItem(ui.Contents.location, 1, 0, 1, 1, 0, 0, false).
 		AddItem(ui.Contents.tabs, 1, 1, 1, 2, 0, 0, false)
 
 	// Bottom
-	grid.
+	ui.Contents.grid.
 		AddItem(ui.Contents.stats, 2, 0, 1, 1, 0, 0, false).
 		AddItem(ui.Contents.chat, 2, 1, 1, 2, 0, 0, false)
 
 	// Footer
-	grid.
+	ui.Contents.grid.
 		AddItem(ui.Contents.quit, 3, 0, 1, 1, 0, 0, false).
 		AddItem(ui.Contents.input, 3, 1, 1, 2, 0, 0, false)
 
-	return grid
+	return ui.Contents.grid
 }
 
 // Starts the UI
